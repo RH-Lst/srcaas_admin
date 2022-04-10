@@ -15,6 +15,7 @@
         <module>service_user</module>
         <module>service_oss</module>
         <module>service_banner</module>
+        <module>service_calculation</module>
     </modules>
 
     <dependencies>
