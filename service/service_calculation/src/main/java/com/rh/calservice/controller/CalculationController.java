@@ -42,5 +42,14 @@ public class CalculationController {
         return R.ok().data("Rmap",Rmap);
     }
 
+    //其他条件给定，计算观测天顶角0°-90°（每隔10°）
+    @PostMapping("calSnowRLimitvza")
+    public R calSnowRLimitvza(@RequestBody CalVo calVo){
+
+        Map<String,Object> Rmap = calculationService.calSnowRLimitvza(calVo);
+
+        return R.ok().data("Rmap",Rmap);
+    }
+
 }
 

@@ -54,7 +54,7 @@ public class CalculationServiceImpl extends ServiceImpl<CalculationMapper, Calcu
 
         try{
             //读取波段和对应波段的冰的复折射率的虚部
-            File file = new File("D:/Java_workspace/srcaas_admin/service/service_user/src/main/resources/excel/x01.xlsx");
+            File file = new File("D:/Java_workspace/srcaas_admin/service/service_calculation/src/main/resources/excel/x01.xlsx");
             InputStream in = new FileInputStream(file);
             ExcelListener listener = new ExcelListener(this);
             EasyExcel.read(in, WaveX.class,listener).sheet().doRead();
@@ -72,10 +72,49 @@ public class CalculationServiceImpl extends ServiceImpl<CalculationMapper, Calcu
             resultmap.put("wave",wavedata);
             resultmap.put("reflectivity",rdata);
         }catch (Exception e){
-            //e.printStackTrace();
-            throw new MyException(20001,"计算积雪反射率出错");
+            e.printStackTrace();
+            //throw new MyException(20001,"计算积雪反射率出错");
         }
         System.out.println(resultmap);
+        return resultmap;
+    }
+
+    @Override
+    public Map<String, Object> calSnowRLimitvza(CalVo calVo) {
+
+        Map<String, Object> resultmap = new HashMap<>();
+        int limitvza = 0;
+        try{
+            //读取波段和对应波段的冰的复折射率的虚部
+            File file = new File("D:/Java_workspace/srcaas_admin/service/service_calculation/src/main/resources/excel/x01.xlsx");
+            InputStream in = new FileInputStream(file);
+            ExcelListener listener = new ExcelListener(this);
+            EasyExcel.read(in, WaveX.class,listener).sheet().doRead();
+            //获取返回值
+            List<WaveX> waveXList = listener.getDatas();
+            //定义返回数据的map
+            while (limitvza <= 90) {
+                //每次循环创建新的集合存放数据，防止数据丢失
+                List<Double> wavedata = new ArrayList<>();
+                List<Double> rdata = new ArrayList<>();
+                //设置观测天顶角
+                calVo.setVza(limitvza*1.0);
+                for (WaveX waveX : waveXList) {
+                    //添加波长nm
+                    wavedata.add(waveX.getWave());
+                    //添加反射率
+                    rdata.add(CalR(calVo,waveX));
+                }
+                resultmap.put("wave"+limitvza,wavedata);
+                resultmap.put("reflectivity"+limitvza,rdata);
+                //每隔10°进行计算
+                limitvza+=10;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            //throw new MyException(20001,"计算积雪反射率出错");
+        }
         return resultmap;
     }
 
@@ -92,12 +131,18 @@ public class CalculationServiceImpl extends ServiceImpl<CalculationMapper, Calcu
         θs = calVo.getSza() * Pai;
         θv = calVo.getVza() * Pai;
         ψ = calVo.getAzim() * Pai;
-        d = calVo.getDSnow();
-        Cst = calVo.getCst();
+        d = calVo.getD();
+        Cst = calVo.getCst()/10000000000.0;//单位ppb，数值1ppb = 10^-9
         Ashape = calVo.getShape();
         λ = waveX.getWave()/1000; //传入的值是nm，计算按μm进行
         χ = waveX.getXnum();
 
+/*        System.out.println("太阳天顶角："+θs);
+        System.out.println("观测天顶角："+θv);
+        System.out.println("相对方位角："+ψ);
+        System.out.println("雪粒径："+d);
+        System.out.println("污染物浓度："+Cst);
+        System.out.println("形状："+Ashape);*/
 
         Double cos_s = Math.cos(θs); //cosθs
         Double cos_v = Math.cos(θv); //cosθv

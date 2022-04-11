@@ -16,7 +16,7 @@ public class CalVo {
     private Double azim;
 
     @ApiModelProperty(value = "雪粒径")
-    private Double dSnow;
+    private Double d;
 
     @ApiModelProperty(value = "污染物浓度")
     private Double cst;

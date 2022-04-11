@@ -20,4 +20,6 @@ public interface CalculationService extends IService<Calculation> {
     void getexceldata(MultipartFile file);
 
     Map<String, Object> calSnowR(CalVo calVo);
+
+    Map<String, Object> calSnowRLimitvza(CalVo calVo);
 }
