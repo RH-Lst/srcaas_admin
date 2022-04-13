@@ -3,15 +3,21 @@ package com.rh.srservice.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.rh.commonutils.JwtUtils;
 import com.rh.commonutils.R;
+import com.rh.commonutils.vo.UserMemberVo;
 import com.rh.servicebase.ExceptionHandler.MyException;
 import com.rh.srservice.entity.UserMember;
+import com.rh.srservice.entity.vo.LoginVo;
+import com.rh.srservice.entity.vo.RegisterVo;
 import com.rh.srservice.service.UserMemberService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -108,6 +114,45 @@ public class UserMemberController {
         }else {
             return R.error();
         }
+    }
+
+    //用户登录
+    @ApiOperation(value = "会员登录")
+    @PostMapping("login")
+    public R login(@RequestBody LoginVo loginVo) {
+        String token = userMemberService.login(loginVo);
+        return R.ok().data("token", token);
+    }
+
+    //用户注册
+    @ApiOperation(value = "会员注册")
+    @PostMapping("register")
+    public R register(@RequestBody RegisterVo registerVo){
+        userMemberService.register(registerVo);
+        return R.ok();
+    }
+
+    @ApiOperation(value = "根据token获取登录信息")
+    @GetMapping("getLoginInfo")
+    public R getLoginInfo(HttpServletRequest request){
+        try {
+            String memberId = JwtUtils.getMemberIdByJwtToken(request);
+            UserMember userMember = userMemberService.getById(memberId);
+            return R.ok().data("userinfo", userMember);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new MyException(20001,"error");
+        }
+    }
+
+    //根据token字符串获取用户信息
+    @GetMapping("getInfoUc/{id}")
+    public UserMemberVo getInfo(@PathVariable String id) {
+        //根据用户id获取用户信息
+        UserMember userMember = userMemberService.getById(id);
+        UserMemberVo memeber = new UserMemberVo();
+        BeanUtils.copyProperties(userMember,memeber);
+        return memeber;
     }
 }
 

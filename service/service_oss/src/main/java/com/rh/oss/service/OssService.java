@@ -4,4 +4,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface OssService {
     String uploadAvator(MultipartFile file);
+
+    String uploadexcel(String choose);
 }

@@ -28,7 +28,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
 
         wrapper.orderByDesc("id");
 
-        wrapper.last("limit 2");
+        wrapper.last("limit 5");
 
         List<Banner> banners = baseMapper.selectList(wrapper);
 

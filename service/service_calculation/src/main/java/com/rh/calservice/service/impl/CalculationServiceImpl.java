@@ -1,15 +1,18 @@
 package com.rh.calservice.service.impl;
 
 import com.alibaba.excel.EasyExcel;
+import com.rh.calservice.client.OssClient;
 import com.rh.calservice.entity.Calculation;
-import com.rh.calservice.entity.excel.WaveX;
+import com.rh.calservice.entity.excel.*;
 import com.rh.calservice.entity.vo.CalVo;
 import com.rh.calservice.entity.vo.inversionVo;
 import com.rh.calservice.listener.ExcelListener;
 import com.rh.calservice.mapper.CalculationMapper;
 import com.rh.calservice.service.CalculationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.rh.commonutils.R;
 import com.rh.servicebase.ExceptionHandler.MyException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,6 +34,9 @@ import java.util.Map;
  */
 @Service
 public class CalculationServiceImpl extends ServiceImpl<CalculationMapper, Calculation> implements CalculationService {
+
+    @Autowired
+    private OssClient ossClient;
 
     @Override
     public void getexceldata(MultipartFile file) {
@@ -69,9 +75,22 @@ public class CalculationServiceImpl extends ServiceImpl<CalculationMapper, Calcu
             }
             resultmap.put("wave",wavedata);
             resultmap.put("reflectivity",rdata);
+
+            List<CalSnowRData> calSnowRDataList = new ArrayList<>();
+            for (int i=0;i<=rdata.size()-1;i++){
+                CalSnowRData calSnowRData = new CalSnowRData();
+                calSnowRData.setWave(wavedata.get(i));
+                calSnowRData.setR(rdata.get(i));
+                calSnowRDataList.add(calSnowRData);
+            }
+
+            String url = writeexcelsnowr(calSnowRDataList);
+
+            resultmap.put("excelurl",url);
+
         }catch (Exception e){
-            //e.printStackTrace();
-            throw new MyException(20001,"计算积雪反射率出错");
+            e.printStackTrace();
+            //throw new MyException(20001,"计算积雪反射率出错");
         }
         System.out.println(resultmap);
         return resultmap;
@@ -109,6 +128,40 @@ public class CalculationServiceImpl extends ServiceImpl<CalculationMapper, Calcu
                 //每隔10°进行计算
                 limitvza+=10;
             }
+
+            List<Double> wave0= (List<Double>) resultmap.get("wave0");
+            List<Double> reflectivity0= (List<Double>) resultmap.get("reflectivity0");
+            List<Double> reflectivity10= (List<Double>) resultmap.get("reflectivity10");
+            List<Double> reflectivity20= (List<Double>) resultmap.get("reflectivity20");
+            List<Double> reflectivity30= (List<Double>) resultmap.get("reflectivity30");
+            List<Double> reflectivity40= (List<Double>) resultmap.get("reflectivity40");
+            List<Double> reflectivity50= (List<Double>) resultmap.get("reflectivity50");
+            List<Double> reflectivity60= (List<Double>) resultmap.get("reflectivity60");
+            List<Double> reflectivity70= (List<Double>) resultmap.get("reflectivity70");
+            List<Double> reflectivity80= (List<Double>) resultmap.get("reflectivity80");
+            List<Double> reflectivity90= (List<Double>) resultmap.get("reflectivity90");
+
+            List<CalSnowRLimitvzaData> calSnowRLimitvzaDataList = new ArrayList<>();
+            for (int i=0 ;i<=2150;i++){
+                CalSnowRLimitvzaData calSnowRLimitvzaData = new CalSnowRLimitvzaData();
+                calSnowRLimitvzaData.setWave(wave0.get(i));
+                calSnowRLimitvzaData.setΘv_0(reflectivity0.get(i));
+                calSnowRLimitvzaData.setΘv_10(reflectivity10.get(i));
+                calSnowRLimitvzaData.setΘv_20(reflectivity20.get(i));
+                calSnowRLimitvzaData.setΘv_30(reflectivity30.get(i));
+                calSnowRLimitvzaData.setΘv_40(reflectivity40.get(i));
+                calSnowRLimitvzaData.setΘv_50(reflectivity50.get(i));
+                calSnowRLimitvzaData.setΘv_60(reflectivity60.get(i));
+                calSnowRLimitvzaData.setΘv_70(reflectivity70.get(i));
+                calSnowRLimitvzaData.setΘv_80(reflectivity80.get(i));
+                calSnowRLimitvzaData.setΘv_90(reflectivity90.get(i));
+                calSnowRLimitvzaDataList.add(calSnowRLimitvzaData);
+            }
+
+            String url = writeexcelvza(calSnowRLimitvzaDataList);
+
+            resultmap.put("excelurl",url);
+
 
         }catch (Exception e){
             //e.printStackTrace();
@@ -150,6 +203,37 @@ public class CalculationServiceImpl extends ServiceImpl<CalculationMapper, Calcu
                 limitazim+=45;
             }
 
+            List<Double> wave0= (List<Double>) resultmap.get("wave0");
+            List<Double> reflectivity0= (List<Double>) resultmap.get("reflectivity0");
+            List<Double> reflectivity45= (List<Double>) resultmap.get("reflectivity45");
+            List<Double> reflectivity90= (List<Double>) resultmap.get("reflectivity90");
+            List<Double> reflectivity135= (List<Double>) resultmap.get("reflectivity135");
+            List<Double> reflectivity180= (List<Double>) resultmap.get("reflectivity180");
+            List<Double> reflectivity225= (List<Double>) resultmap.get("reflectivity225");
+            List<Double> reflectivity270= (List<Double>) resultmap.get("reflectivity270");
+            List<Double> reflectivity315= (List<Double>) resultmap.get("reflectivity315");
+            List<Double> reflectivity360= (List<Double>) resultmap.get("reflectivity360");
+
+            List<CalSnowRLimitzaimData> calSnowRLimitvzaDataList = new ArrayList<>();
+            for (int i=0 ;i<=2150;i++){
+                CalSnowRLimitzaimData calSnowRLimitzaimData = new CalSnowRLimitzaimData();
+                calSnowRLimitzaimData.setWave(wave0.get(i));
+                calSnowRLimitzaimData.setΘψ_0(reflectivity0.get(i));
+                calSnowRLimitzaimData.setΘψ_45(reflectivity45.get(i));
+                calSnowRLimitzaimData.setΘψ_90(reflectivity90.get(i));
+                calSnowRLimitzaimData.setΘψ_135(reflectivity135.get(i));
+                calSnowRLimitzaimData.setΘψ_180(reflectivity180.get(i));
+                calSnowRLimitzaimData.setΘψ_225(reflectivity225.get(i));
+                calSnowRLimitzaimData.setΘψ_270(reflectivity270.get(i));
+                calSnowRLimitzaimData.setΘψ_315(reflectivity315.get(i));
+                calSnowRLimitzaimData.setΘψ_360(reflectivity360.get(i));
+                calSnowRLimitvzaDataList.add(calSnowRLimitzaimData);
+            }
+
+            String url = writeexcelzaim(calSnowRLimitvzaDataList);
+
+            resultmap.put("excelurl",url);
+
         }catch (Exception e){
             e.printStackTrace();
             //throw new MyException(20001,"计算积雪反射率出错");
@@ -188,6 +272,29 @@ public class CalculationServiceImpl extends ServiceImpl<CalculationMapper, Calcu
                 resultmap.put("reflectivity"+arrd[i],rdata);
             }
 
+            List<Double> wave100= (List<Double>) resultmap.get("wave100");
+            List<Double> reflectivity100= (List<Double>) resultmap.get("reflectivity100");
+            List<Double> reflectivity200= (List<Double>) resultmap.get("reflectivity200");
+            List<Double> reflectivity500= (List<Double>) resultmap.get("reflectivity500");
+            List<Double> reflectivity1000= (List<Double>) resultmap.get("reflectivity1000");
+            List<Double> reflectivity2000= (List<Double>) resultmap.get("reflectivity2000");
+
+            List<CalSnowRLimitdData> calSnowRLimitdDataList = new ArrayList<>();
+            for (int i=0 ;i<=2150;i++){
+                CalSnowRLimitdData calSnowRLimitdData = new CalSnowRLimitdData();
+                calSnowRLimitdData.setWave(wave100.get(i));
+                calSnowRLimitdData.setD_100(reflectivity100.get(i));
+                calSnowRLimitdData.setD_200(reflectivity200.get(i));
+                calSnowRLimitdData.setD_500(reflectivity500.get(i));
+                calSnowRLimitdData.setD_1000(reflectivity1000.get(i));
+                calSnowRLimitdData.setD_2000(reflectivity2000.get(i));
+                calSnowRLimitdDataList.add(calSnowRLimitdData);
+            }
+
+            String url = writeexceld(calSnowRLimitdDataList);
+
+            resultmap.put("excelurl",url);
+
         }catch (Exception e){
             //e.printStackTrace();
             throw new MyException(20001,"计算积雪反射率出错");
@@ -225,6 +332,27 @@ public class CalculationServiceImpl extends ServiceImpl<CalculationMapper, Calcu
                 resultmap.put("wave"+arrcst[i],wavedata);
                 resultmap.put("reflectivity"+arrcst[i],rdata);
             }
+
+            List<Double> wave0= (List<Double>) resultmap.get("wave0");
+            List<Double> reflectivity0= (List<Double>) resultmap.get("reflectivity0");
+            List<Double> reflectivity100= (List<Double>) resultmap.get("reflectivity100");
+            List<Double> reflectivity1000= (List<Double>) resultmap.get("reflectivity1000");
+            List<Double> reflectivity3000= (List<Double>) resultmap.get("reflectivity3000");
+
+            List<CalSnowRLimitcstData> calSnowRLimitcstDataList = new ArrayList<>();
+            for (int i=0 ;i<=2150;i++){
+                CalSnowRLimitcstData calSnowRLimitcstData = new CalSnowRLimitcstData();
+                calSnowRLimitcstData.setWave(wave0.get(i));
+                calSnowRLimitcstData.setCst_0(reflectivity0.get(i));
+                calSnowRLimitcstData.setCst_100(reflectivity100.get(i));
+                calSnowRLimitcstData.setCst_1000(reflectivity1000.get(i));
+                calSnowRLimitcstData.setCst_3000(reflectivity3000.get(i));
+                calSnowRLimitcstDataList.add(calSnowRLimitcstData);
+            }
+
+            String url = writeexcelcst(calSnowRLimitcstDataList);
+
+            resultmap.put("excelurl",url);
 
         }catch (Exception e){
             //e.printStackTrace();
@@ -478,5 +606,79 @@ public class CalculationServiceImpl extends ServiceImpl<CalculationMapper, Calcu
         R = R0 * (1/Math.pow(Math.E,α*F));
 
         return R;
+    }
+
+    //计算积雪反射率，写入excel
+    private String writeexcelsnowr(List<CalSnowRData> list){
+        // 写法1
+        String fileName = "D:/Java_workspace/srcaas_admin/service/service_calculation/src/main/resources/excel/demo.xlsx";
+        // 这里 需要指定写用哪个class去写，然后写到第一个sheet，名字为模板 然后文件流会自动关闭
+        // 如果这里想使用03 则 传入excelType参数即可
+        EasyExcel.write(fileName, CalSnowRData.class).sheet().doWrite(list);
+
+        R excelr= ossClient.uploadexcel("writeexcelsnowr");
+        String url = (String) excelr.getData().get("url");;
+
+        return url;
+    }
+
+
+    //观测天顶角每隔10°计算积雪反射率，写入excel
+    private String writeexcelvza(List<CalSnowRLimitvzaData> vzalist){
+        // 写法1
+        String fileName = "D:/Java_workspace/srcaas_admin/service/service_calculation/src/main/resources/excel/vzademo.xlsx";
+        // 这里 需要指定写用哪个class去写，然后写到第一个sheet，名字为模板 然后文件流会自动关闭
+        // 如果这里想使用03 则 传入excelType参数即可
+        EasyExcel.write(fileName, CalSnowRLimitvzaData.class).sheet().doWrite(vzalist);
+
+        R excelr= ossClient.uploadexcel("writeexcelvza");
+        String url = (String) excelr.getData().get("url");;
+
+        return url;
+    }
+
+    //相对方位角每隔45°计算积雪反射率，写入excel
+    private String writeexcelzaim(List<CalSnowRLimitzaimData> azimlist){
+        // 写法1
+        String fileName = "D:/Java_workspace/srcaas_admin/service/service_calculation/src/main/resources/excel/azimdemo.xlsx";
+        // 这里 需要指定写用哪个class去写，然后写到第一个sheet，名字为模板 然后文件流会自动关闭
+        // 如果这里想使用03 则 传入excelType参数即可
+        EasyExcel.write(fileName, CalSnowRLimitzaimData.class).sheet().doWrite(azimlist);
+
+        R excelr= ossClient.uploadexcel("writeexcelzaim");
+        String url = (String) excelr.getData().get("url");;
+
+        return url;
+
+    }
+
+    //计算雪粒径100μm，200μm，500μm，1000μm，2000μm，写入excel
+    private String writeexceld(List<CalSnowRLimitdData> dlist){
+        // 写法1
+        String fileName = "D:/Java_workspace/srcaas_admin/service/service_calculation/src/main/resources/excel/ddemo.xlsx";
+        // 这里 需要指定写用哪个class去写，然后写到第一个sheet，名字为模板 然后文件流会自动关闭
+        // 如果这里想使用03 则 传入excelType参数即可
+        EasyExcel.write(fileName, CalSnowRLimitdData.class).sheet().doWrite(dlist);
+
+        R excelr= ossClient.uploadexcel("writeexceld");
+        String url = (String) excelr.getData().get("url");;
+
+        return url;
+
+    }
+
+    //计算污染物浓度0ppb，100ppb，1000ppb，3000ppb，写入excel
+    private String writeexcelcst(List<CalSnowRLimitcstData> cstlist){
+        // 写法1
+        String fileName = "D:/Java_workspace/srcaas_admin/service/service_calculation/src/main/resources/excel/cstdemo.xlsx";
+        // 这里 需要指定写用哪个class去写，然后写到第一个sheet，名字为模板 然后文件流会自动关闭
+        // 如果这里想使用03 则 传入excelType参数即可
+        EasyExcel.write(fileName, CalSnowRLimitcstData.class).sheet().doWrite(cstlist);
+
+        R excelr= ossClient.uploadexcel("writeexcelcst");
+        String url = (String) excelr.getData().get("url");;
+
+        return url;
+
     }
 }
