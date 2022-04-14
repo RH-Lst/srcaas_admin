@@ -435,6 +435,7 @@ public class CalculationServiceImpl extends ServiceImpl<CalculationMapper, Calcu
         return d;
     }
 
+    //根据已知条件反演污染物浓度
     @Override
     public Double inversioncst(inversionVo inversionVo) {
         Double R,R0,α,F,γ,aef,P;//定义R积雪反射率，R0弱吸收表面双向反射因子
@@ -507,6 +508,7 @@ public class CalculationServiceImpl extends ServiceImpl<CalculationMapper, Calcu
         return Cst;
     }
 
+    //精度校验
     @Override
     public List<Double> check(CalVo calVo) {
         Map<String, Object> resultmap = new HashMap<>();
