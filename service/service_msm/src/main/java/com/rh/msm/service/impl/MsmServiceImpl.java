@@ -16,10 +16,10 @@ public class MsmServiceImpl implements MsmService {
 
         if(StringUtils.isEmpty(phonenum)) {return false;}
 
-        String host = "https://gyytz.market.alicloudapi.com";
+        String host = "";
         String path = "/sms/smsSend";
         String method = "POST";
-        String appcode = "e09465c3204f4059a8a66ac0eb5b597d";
+        String appcode = "";
         String code ="**code**:"+param.get("code")+",**minute**:5";
         Map<String, String> headers = new HashMap<String, String>();
         //最后在header中的格式(中间是英文空格)为Authorization:APPCODE 83359fd73fe94948385f570e3c139105
